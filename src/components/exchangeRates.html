@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnPara Döviz Kurları</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .exchange-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        .last-updated {
+            background: #f8f9fa;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9em;
+            border-left: 4px solid #28a745;
+        }
+        
+        .rates-grid {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .rate-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .rate-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .rate-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .currency-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .currency-name {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .currency-flag {
+            width: 32px;
+            height: 24px;
+            border-radius: 4px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .rates-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .rate-item {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .rate-label {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-bottom: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .rate-value {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .buy-rate {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .sell-rate {
+            background: linear-gradient(135deg, #dc3545, #fd7e14);
+            color: white;
+        }
+        
+        .buy-rate .rate-label,
+        .sell-rate .rate-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .buy-rate .rate-value,
+        .sell-rate .rate-value {
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .enpara-logo {
+            color: #667eea;
+            font-weight: 700;
+        }
+        
+        @media (max-width: 600px) {
+            .exchange-container {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .rates-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .currency-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="exchange-container">
+        <div class="header">
+            <h1>💱 EnPara Döviz Kurları</h1>
+            <p class="subtitle">Güncel döviz alış ve satış kurları</p>
+        </div>
+        
+        <div class="last-updated" id="last-updated">
+            <span>⏰ Son güncelleme: <span id="update-time">Yükleniyor...</span></span>
+        </div>
+        
+        <div id="rates-container">
+            <div class="loading">Döviz kurları yükleniyor...</div>
+        </div>
+        
+        <div class="footer">
+            <p>Veriler <span class="enpara-logo">EnPara</span> bankasından alınmaktadır</p>
+        </div>
+    </div>
+
+    <script>
+        // Wait for OpenAI tool output
+        window.addEventListener('load', () => {
+            const data = window.openai?.toolOutput;
+            if (data) {
+                renderExchangeRates(data);
+            } else {
+                showError('Veri yüklenemedi');
+            }
+        });
+
+        function renderExchangeRates(data) {
+            const container = document.getElementById('rates-container');
+            const updateTime = document.getElementById('update-time');
+            
+            if (data.error) {
+                showError(data.error);
+                return;
+            }
+            
+            if (!data.exchangeRates || data.exchangeRates.length === 0) {
+                showError('Döviz kuru verisi bulunamadı');
+                return;
+            }
+            
+            // Update timestamp
+            if (data.lastUpdated) {
+                const date = new Date(data.lastUpdated);
+                updateTime.textContent = date.toLocaleString('tr-TR');
+            }
+            
+            // Render rates
+            container.innerHTML = data.exchangeRates.map(rate => `
+                <div class="rate-card">
+                    <div class="currency-header">
+                        <div class="currency-name">${rate.CurrencyName || rate.currency || 'N/A'}</div>
+                        <div class="currency-flag">${getCurrencyFlag(rate.CurrencyName || rate.currency)}</div>
+                    </div>
+                    <div class="rates-row">
+                        <div class="rate-item buy-rate">
+                            <div class="rate-label">Alış</div>
+                            <div class="rate-value">${formatRate(rate.BuyRate || rate.buyRate)}</div>
+                        </div>
+                        <div class="rate-item sell-rate">
+                            <div class="rate-label">Satış</div>
+                            <div class="rate-value">${formatRate(rate.SellRate || rate.sellRate)}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function formatRate(rate) {
+            if (!rate) return 'N/A';
+            return parseFloat(rate).toFixed(4);
+        }
+        
+        function getCurrencyFlag(currency) {
+            const flags = {
+                'USD': '🇺🇸',
+                'EUR': '🇪🇺',
+                'GBP': '🇬🇧',
+                'JPY': '🇯🇵',
+                'CHF': '🇨🇭',
+                'CAD': '🇨🇦',
+                'AUD': '🇦🇺',
+                'SEK': '🇸🇪',
+                'NOK': '🇳🇴',
+                'DKK': '🇩🇰',
+                'RUB': '🇷🇺',
+                'CNY': '🇨🇳',
+                'SAR': '🇸🇦',
+                'AED': '🇦🇪',
+                'KWD': '🇰🇼',
+                'QAR': '🇶🇦',
+                'BHD': '🇧🇭',
+                'OMR': '🇴🇲',
+                'JOD': '🇯🇴',
+                'LBP': '🇱🇧',
+                'EGP': '🇪🇬',
+                'MAD': '🇲🇦',
+                'TND': '🇹🇳',
+                'DZD': '🇩🇿',
+                'LYD': '🇱🇾',
+                'SDG': '🇸🇩',
+                'ETB': '🇪🇹',
+                'KES': '🇰🇪',
+                'UGX': '🇺🇬',
+                'TZS': '🇹🇿',
+                'ZAR': '🇿🇦',
+                'NGN': '🇳🇬',
+                'GHS': '🇬🇭',
+                'XOF': '🇸🇳',
+                'XAF': '🇨🇲',
+                'BRL': '🇧🇷',
+                'ARS': '🇦🇷',
+                'CLP': '🇨🇱',
+                'COP': '🇨🇴',
+                'MXN': '🇲🇽',
+                'INR': '🇮🇳',
+                'PKR': '🇵🇰',
+                'BDT': '🇧🇩',
+                'LKR': '🇱🇰',
+                'NPR': '🇳🇵',
+                'THB': '🇹🇭',
+                'VND': '🇻🇳',
+                'IDR': '🇮🇩',
+                'MYR': '🇲🇾',
+                'SGD': '🇸🇬',
+                'PHP': '🇵🇭',
+                'KRW': '🇰🇷',
+                'HKD': '🇭🇰',
+                'TWD': '🇹🇼',
+                'NZD': '🇳🇿',
+                'ZAR': '🇿🇦',
+                'TRY': '🇹🇷'
+            };
+            return flags[currency] || '💱';
+        }
+        
+        function showError(message) {
+            const container = document.getElementById('rates-container');
+            container.innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+{
+  "name": "enpara-chatgpt-app",
+  "version": "1.0.0",
+  "description": "EnPara Banking Assistant for ChatGPT - Get exchange rates, find branches, and view campaigns",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo 'No build step required'",
+    "test": "echo 'No tests specified'",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel"
+  },
+  "keywords": [
+    "chatgpt",
+    "apps-sdk",
+    "mcp",
+    "enpara",
+    "banking",
+    "exchange-rates",
+    "turkey",
+    "financial-services",
+    "currency",
+    "branches",
+    "atms",
+    "campaigns"
+  ],
+  "author": "EnPara Development Team",
+  "license": "MIT",
+  "homepage": "https://github.com/enpara/enpara-chatgpt-app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/enpara/enpara-chatgpt-app.git"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.0",
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "rate-limiter-flexible": "^4.0.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "vercel": "^32.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "vercel": {
+    "functions": {
+      "server.js": {
+        "maxDuration": 30
+      }
+    }
+  }
+}
