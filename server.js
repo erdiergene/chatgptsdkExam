@@ -246,18 +246,7 @@ mcpServer.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 
 mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
-    tools: [
-      {
-        name: "get-exchange-rates",
-        description: "Read-only: returns exchange rates as a markdown table (internally reads resource)",
-        inputSchema: { type: "object", properties: {} }
-      },
-      {
-        name: "get-banking-campaigns",
-        description: "Read-only: returns campaigns as a markdown table (internally reads resource)",
-        inputSchema: { type: "object", properties: {} }
-      }
-    ]
+    tools: []
   };
 });
 
