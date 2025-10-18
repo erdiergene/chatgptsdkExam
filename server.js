@@ -578,6 +578,7 @@ app.get('/health', (req, res) => {
 app.get('/app.json', (req, res) => {
   try {
     const appConfig = JSON.parse(readFileSync(join(__dirname, 'app.json'), 'utf8'));
+    res.set('Cache-Control', 'no-store');
     res.json(appConfig);
   } catch (error) {
     res.status(500).json({ error: 'Failed to load app configuration' });
