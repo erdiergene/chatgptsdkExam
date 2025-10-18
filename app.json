@@ -39,7 +39,7 @@
       }
     },
     "capabilities": {
-      "tools": true,
+      "tools": false,
       "resources": true,
       "prompts": true
     }
