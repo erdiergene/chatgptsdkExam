@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "enpara-banking": {
+      "command": "node",
+      "args": ["mcp-server.js"],
+      "cwd": "/Users/erdi/Desktop/enBankChatGptMcp-main",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

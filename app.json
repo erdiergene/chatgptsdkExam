@@ -1,0 +1,176 @@
+{
+  "name": "EnPara Banking Assistant",
+  "description": "Get real-time exchange rates, find branches and ATMs, and view current banking campaigns from EnPara Bank in Turkey.",
+  "version": "1.0.0",
+  "author": "EnPara Development Team",
+  "license": "MIT",
+  "homepage": "https://github.com/enpara/enpara-chatgpt-app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/enpara/enpara-chatgpt-app.git"
+  },
+  "keywords": [
+    "banking",
+    "exchange-rates",
+    "turkey",
+    "enpara",
+    "financial-services",
+    "currency",
+    "branches",
+    "atms",
+    "campaigns"
+  ],
+  "categories": [
+    "finance",
+    "utilities",
+    "business"
+  ],
+  "languages": [
+    "tr",
+    "en"
+  ],
+  "mcp": {
+    "server": {
+      "command": "node",
+      "args": ["server.js"],
+      "env": {
+        "NODE_ENV": "production",
+        "MCP_MODE": "http"
+      }
+    },
+    "capabilities": {
+      "tools": true,
+      "resources": true,
+      "prompts": true
+    }
+  },
+  "tools": [
+    {
+      "name": "get-exchange-rates",
+      "title": "Get Exchange Rates",
+      "description": "Get current currency exchange rates from EnPara bank including USD, EUR, GBP and other major currencies.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "currencies": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Specific currencies to fetch (e.g., ['USD', 'EUR', 'GBP'])",
+            "default": ["USD", "EUR", "GBP", "CHF", "JPY"]
+          },
+          "baseCurrency": {
+            "type": "string",
+            "description": "Base currency for rates (default: TRY)",
+            "default": "TRY"
+          }
+        }
+      }
+    },
+    {
+      "name": "get-banking-campaigns",
+      "title": "Get Banking Campaigns",
+      "description": "View current EnPara banking campaigns, promotions, and special offers including credit cards, loans, and savings accounts.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Campaign category filter (e.g., 'credit-card', 'loan', 'savings')"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Show only active campaigns",
+            "default": true
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "exchange-rates-latest",
+      "title": "Latest Exchange Rates",
+      "description": "Current exchange rates from EnPara Bank (JSON)",
+      "uri": "enpara://exchange-rates/latest",
+      "mimeType": "application/json"
+    },
+    {
+      "name": "exchange-rates-ui",
+      "title": "Exchange Rates Widget",
+      "description": "Interactive widget displaying current exchange rates with buy/sell prices",
+      "uri": "enpara://exchange-rates/ui",
+      "mimeType": "text/html"
+    },
+    {
+      "name": "campaigns-latest",
+      "title": "Latest Campaigns",
+      "description": "Current banking campaigns and promotions (JSON)",
+      "uri": "enpara://campaigns/latest",
+      "mimeType": "application/json"
+    },
+    {
+      "name": "campaigns-ui",
+      "title": "Campaigns Widget", 
+      "description": "Display of current EnPara banking campaigns and promotional offers",
+      "uri": "enpara://campaigns/ui",
+      "mimeType": "text/html"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "check-exchange-rate",
+      "title": "Check Exchange Rate",
+      "description": "Check current exchange rate for a specific currency",
+      "arguments": [
+        {
+          "name": "currency",
+          "description": "Currency code (e.g., USD, EUR, GBP)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "compare-currencies",
+      "title": "Compare Currencies",
+      "description": "Compare exchange rates between multiple currencies",
+      "arguments": [
+        {
+          "name": "currencies",
+          "description": "Comma-separated currency codes (e.g., USD,EUR,GBP)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "find-campaigns",
+      "title": "Find Campaigns",
+      "description": "Find banking campaigns by category",
+      "arguments": [
+        {
+          "name": "category",
+          "description": "Campaign category (credit-card, loan, savings, etc.)",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "privacy": {
+    "dataCollection": "minimal",
+    "dataRetention": "none",
+    "thirdPartySharing": false,
+    "description": "This app only fetches public banking information from EnPara's website. No personal data is collected, stored, or shared."
+  },
+  "support": {
+    "email": "support@enpara.com",
+    "documentation": "https://github.com/enpara/enpara-chatgpt-app/blob/main/README.md",
+    "issues": "https://github.com/enpara/enpara-chatgpt-app/issues"
+  },
+  "deployment": {
+    "platforms": ["vercel", "railway", "heroku", "aws", "azure"],
+    "requirements": {
+      "node": ">=18.0.0",
+      "memory": "512MB",
+      "storage": "100MB"
+    }
+  }
+}

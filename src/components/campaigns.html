@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnPara Bankacılık Kampanyaları</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .campaigns-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        .campaigns-info {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #6c757d;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .campaigns-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .campaign-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .campaign-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .campaign-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffc107, #fd7e14);
+        }
+        
+        .campaign-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .campaign-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .campaign-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        
+        .badge-active {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .badge-expired {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+        }
+        
+        .badge-upcoming {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+        }
+        
+        .campaign-content {
+            margin-bottom: 20px;
+        }
+        
+        .campaign-description {
+            color: #495057;
+            font-size: 1em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .campaign-details {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .detail-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            margin-top: 2px;
+        }
+        
+        .detail-text {
+            flex: 1;
+            color: #495057;
+            font-size: 0.95em;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 2px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .campaign-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .action-button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .no-campaigns {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        .no-campaigns h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .enpara-logo {
+            color: #667eea;
+            font-weight: 700;
+        }
+        
+        @media (max-width: 600px) {
+            .campaigns-container {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .campaign-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .campaign-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="campaigns-container">
+        <div class="header">
+            <h1>🎯 EnPara Bankacılık Kampanyaları</h1>
+            <p class="subtitle">Güncel kampanyalar ve promosyonlar</p>
+        </div>
+        
+        <div class="campaigns-info" id="campaigns-info">
+            <span>📢 Kampanyalar yükleniyor...</span>
+        </div>
+        
+        <div id="campaigns-container">
+            <div class="loading">Kampanyalar yükleniyor...</div>
+        </div>
+        
+        <div class="footer">
+            <p>Veriler <span class="enpara-logo">EnPara</span> bankasından alınmaktadır</p>
+        </div>
+    </div>
+
+    <script>
+        // Wait for OpenAI tool output
+        window.addEventListener('load', () => {
+            const data = window.openai?.toolOutput;
+            if (data) {
+                renderCampaigns(data);
+            } else {
+                showError('Veri yüklenemedi');
+            }
+        });
+
+        function renderCampaigns(data) {
+            const container = document.getElementById('campaigns-container');
+            const campaignsInfo = document.getElementById('campaigns-info');
+            
+            if (data.error) {
+                showError(data.error);
+                return;
+            }
+            
+            if (!data.campaigns || data.campaigns.length === 0) {
+                showNoCampaigns();
+                return;
+            }
+            
+            // Update campaigns info
+            const totalCount = data.totalCount || data.campaigns.length;
+            campaignsInfo.innerHTML = `<span>🎯 Toplam ${totalCount} kampanya bulundu</span>`;
+            
+            // Render campaigns
+            container.innerHTML = data.campaigns.map(campaign => `
+                <div class="campaign-card">
+                    <div class="campaign-header">
+                        <div>
+                            <div class="campaign-title">${campaign.Title || campaign.title || campaign.Name || campaign.name || 'Kampanya'}</div>
+                        </div>
+                        <div class="campaign-badge ${getCampaignStatus(campaign)}">
+                            ${getCampaignStatusText(campaign)}
+                        </div>
+                    </div>
+                    
+                    <div class="campaign-content">
+                        ${campaign.Description || campaign.description ? `
+                            <div class="campaign-description">
+                                ${campaign.Description || campaign.description}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="campaign-details">
+                            ${campaign.StartDate || campaign.startDate ? `
+                                <div class="detail-item">
+                                    <div class="detail-icon">📅</div>
+                                    <div class="detail-text">
+                                        <div class="detail-label">Başlangıç Tarihi</div>
+                                        <div class="detail-value">${formatDate(campaign.StartDate || campaign.startDate)}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${campaign.EndDate || campaign.endDate ? `
+                                <div class="detail-item">
+                                    <div class="detail-icon">⏰</div>
+                                    <div class="detail-text">
+                                        <div class="detail-label">Bitiş Tarihi</div>
+                                        <div class="detail-value">${formatDate(campaign.EndDate || campaign.endDate)}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${campaign.Category || campaign.category ? `
+                                <div class="detail-item">
+                                    <div class="detail-icon">🏷️</div>
+                                    <div class="detail-text">
+                                        <div class="detail-label">Kategori</div>
+                                        <div class="detail-value">${campaign.Category || campaign.category}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${campaign.TargetAudience || campaign.targetAudience ? `
+                                <div class="detail-item">
+                                    <div class="detail-icon">👥</div>
+                                    <div class="detail-text">
+                                        <div class="detail-label">Hedef Kitle</div>
+                                        <div class="detail-value">${campaign.TargetAudience || campaign.targetAudience}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        ${campaign.TermsAndConditions || campaign.termsAndConditions ? `
+                            <div class="detail-item">
+                                <div class="detail-icon">📋</div>
+                                <div class="detail-text">
+                                    <div class="detail-label">Şartlar ve Koşullar</div>
+                                    <div class="detail-value">${campaign.TermsAndConditions || campaign.termsAndConditions}</div>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="campaign-actions">
+                        ${campaign.Link || campaign.link ? `
+                            <a href="${campaign.Link || campaign.link}" class="action-button btn-primary" target="_blank">
+                                Detayları Görüntüle
+                            </a>
+                        ` : ''}
+                        
+                        <button class="action-button btn-secondary" onclick="shareCampaign('${campaign.Title || campaign.title || campaign.Name || campaign.name}')">
+                            Paylaş
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function getCampaignStatus(campaign) {
+            const now = new Date();
+            const startDate = new Date(campaign.StartDate || campaign.startDate);
+            const endDate = new Date(campaign.EndDate || campaign.endDate);
+            
+            if (startDate > now) {
+                return 'badge-upcoming';
+            } else if (endDate < now) {
+                return 'badge-expired';
+            } else {
+                return 'badge-active';
+            }
+        }
+        
+        function getCampaignStatusText(campaign) {
+            const now = new Date();
+            const startDate = new Date(campaign.StartDate || campaign.startDate);
+            const endDate = new Date(campaign.EndDate || campaign.endDate);
+            
+            if (startDate > now) {
+                return 'Yakında';
+            } else if (endDate < now) {
+                return 'Süresi Dolmuş';
+            } else {
+                return 'Aktif';
+            }
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'Belirtilmemiş';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('tr-TR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        
+        function shareCampaign(campaignName) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'EnPara Kampanyası',
+                    text: `${campaignName} kampanyasını inceleyin!`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const text = `${campaignName} kampanyasını inceleyin! ${window.location.href}`;
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Kampanya bilgileri panoya kopyalandı!');
+                });
+            }
+        }
+        
+        function showError(message) {
+            const container = document.getElementById('campaigns-container');
+            container.innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
+        
+        function showNoCampaigns() {
+            const container = document.getElementById('campaigns-container');
+            container.innerHTML = `
+                <div class="no-campaigns">
+                    <h3>🎯 Kampanya Bulunamadı</h3>
+                    <p>Şu anda aktif kampanya bulunmamaktadır. Lütfen daha sonra tekrar kontrol edin.</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
