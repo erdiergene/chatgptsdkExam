@@ -424,12 +424,11 @@ app.use(helmet({
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://chat.openai.com', 'https://chatgpt.com'] 
-    : true,
+  // Genişletilmiş origin listesi: mobil uygulama/webview senaryolarını da kapsar
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept']
 }));
 
 app.use(express.json({ limit: '10mb' }));
