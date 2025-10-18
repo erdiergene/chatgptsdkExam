@@ -1,7 +1,7 @@
 {
   "name": "EnPara Banking Assistant",
   "description": "Get real-time exchange rates, find branches and ATMs, and view current banking campaigns from EnPara Bank in Turkey.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "EnPara Development Team",
   "license": "MIT",
   "homepage": "https://github.com/enpara/enpara-chatgpt-app",
