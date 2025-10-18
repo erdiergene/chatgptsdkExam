@@ -59,6 +59,13 @@ const mcpServer = new Server(
 const exchangeRatesHTML = readFileSync(join(__dirname, 'src/components/exchangeRates.html'), 'utf8');
 const campaignsHTML = readFileSync(join(__dirname, 'src/components/campaigns.html'), 'utf8');
 
+// Helper to inject fetched data into UI HTML as a global for custom-ux bundles
+const injectDataIntoHtml = (html, globalVarName, dataObj) => {
+  const payload = JSON.stringify(dataObj);
+  const script = `\n<script>window.${globalVarName} = ${payload};</script>\n`;
+  return html.includes('</body>') ? html.replace('</body>', `${script}</body>`) : (html + script);
+};
+
 // Helper formatters used for resource summaries
 const createExchangeRateTable = (rates) => {
   if (!rates || rates.length === 0) {
@@ -166,13 +173,11 @@ mcpServer.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     }
 
     if (uri === "enpara://exchange-rates/ui") {
+      const rates = await EnParaAPI.getExchangeRates();
+      const page = injectDataIntoHtml(exchangeRatesHTML, '__exchangeRatesData', rates);
       return {
         contents: [
-          {
-            uri: uri,
-            mimeType: "text/html",
-            text: exchangeRatesHTML
-          }
+          { uri, mimeType: "text/html", text: page }
         ]
       };
     }
@@ -208,13 +213,11 @@ mcpServer.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     }
 
     if (uri === "enpara://campaigns/ui") {
+      const campaigns = await EnParaAPI.getCampaigns();
+      const page = injectDataIntoHtml(campaignsHTML, '__campaignsData', campaigns);
       return {
         contents: [
-          {
-            uri: uri,
-            mimeType: "text/html",
-            text: campaignsHTML
-          }
+          { uri, mimeType: "text/html", text: page }
         ]
       };
     }
