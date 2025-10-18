@@ -44,48 +44,7 @@
       "prompts": true
     }
   },
-  "tools": [
-    {
-      "name": "get-exchange-rates",
-      "title": "Get Exchange Rates",
-      "description": "Get current currency exchange rates from EnPara bank including USD, EUR, GBP and other major currencies.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "currencies": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "Specific currencies to fetch (e.g., ['USD', 'EUR', 'GBP'])",
-            "default": ["USD", "EUR", "GBP", "CHF", "JPY"]
-          },
-          "baseCurrency": {
-            "type": "string",
-            "description": "Base currency for rates (default: TRY)",
-            "default": "TRY"
-          }
-        }
-      }
-    },
-    {
-      "name": "get-banking-campaigns",
-      "title": "Get Banking Campaigns",
-      "description": "View current EnPara banking campaigns, promotions, and special offers including credit cards, loans, and savings accounts.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "category": {
-            "type": "string",
-            "description": "Campaign category filter (e.g., 'credit-card', 'loan', 'savings')"
-          },
-          "active": {
-            "type": "boolean",
-            "description": "Show only active campaigns",
-            "default": true
-          }
-        }
-      }
-    }
-  ],
+  "tools": [],
   "resources": [
     {
       "name": "exchange-rates-latest",
@@ -93,6 +52,13 @@
       "description": "Current exchange rates from EnPara Bank (JSON)",
       "uri": "enpara://exchange-rates/latest",
       "mimeType": "application/json"
+    },
+    {
+      "name": "exchange-rates-summary",
+      "title": "Exchange Rates Summary",
+      "description": "Markdown table summary of exchange rates",
+      "uri": "enpara://exchange-rates/summary",
+      "mimeType": "text/markdown"
     },
     {
       "name": "exchange-rates-ui",
@@ -107,6 +73,13 @@
       "description": "Current banking campaigns and promotions (JSON)",
       "uri": "enpara://campaigns/latest",
       "mimeType": "application/json"
+    },
+    {
+      "name": "campaigns-summary",
+      "title": "Campaigns Summary",
+      "description": "Markdown table summary of campaigns",
+      "uri": "enpara://campaigns/summary",
+      "mimeType": "text/markdown"
     },
     {
       "name": "campaigns-ui",

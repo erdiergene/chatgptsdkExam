@@ -59,6 +59,48 @@ const mcpServer = new Server(
 const exchangeRatesHTML = readFileSync(join(__dirname, 'src/components/exchangeRates.html'), 'utf8');
 const campaignsHTML = readFileSync(join(__dirname, 'src/components/campaigns.html'), 'utf8');
 
+// Helper formatters used for resource summaries
+const createExchangeRateTable = (rates) => {
+  if (!rates || rates.length === 0) {
+    return '❌ No exchange rates found for the requested currencies.';
+  }
+  const tableHeader = `| 💱 Currency | 📈 Alış (Buy) | 📉 Satış (Sell) | 📊 Spread | 💰 Profit/Loss |\n|-------------|---------------|----------------|-----------|---------------|\n`;
+  const tableRows = rates.map(rate => {
+    const currency = String(rate.currency || '').toUpperCase();
+    const buyRate = parseFloat(rate.buyRate).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+    const sellRate = parseFloat(rate.sellRate).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+    const spread = (parseFloat(rate.sellRate) - parseFloat(rate.buyRate)).toFixed(4);
+    const spreadPercent = ((parseFloat(spread) / parseFloat(rate.buyRate)) * 100).toFixed(2);
+    const currencyFlags = {
+      'USD': '🇺🇸', 'EUR': '🇪🇺', 'GBP': '🇬🇧', 'CHF': '🇨🇭', 'JPY': '🇯🇵',
+      'CAD': '🇨🇦', 'AUD': '🇦🇺', 'SEK': '🇸🇪', 'NOK': '🇳🇴', 'DKK': '🇩🇰',
+      'RUB': '🇷🇺', 'CNY': '🇨🇳', 'SAR': '🇸🇦', 'AED': '🇦🇪', 'KWD': '🇰🇼',
+      'BHD': '🇧🇭', 'QAR': '🇶🇦', 'OMR': '🇴🇲', 'JOD': '🇯🇴', 'LBP': '🇱🇧',
+      'EGP': '🇪🇬', 'ILS': '🇮🇱', 'TRY': '🇹🇷'
+    };
+    const flag = currencyFlags[currency] || '🏦';
+    const profitLoss = parseFloat(spreadPercent) > 0 ? `+${spreadPercent}%` : `${spreadPercent}%`;
+    return `| ${flag} **${currency}** | **${buyRate} TL** | **${sellRate} TL** | ${spread} TL | ${profitLoss} |`;
+  }).join('\n');
+  return tableHeader + tableRows;
+};
+
+const createCampaignTable = (campaigns) => {
+  if (!campaigns || campaigns.length === 0) {
+    return '❌ No active campaigns found at the moment.';
+  }
+  const tableHeader = `| # | 🎯 Campaign | 📝 Description | 📅 Valid Until | 🔗 Action |\n|--|------------|----------------|---------------|----------|\n`;
+  const tableRows = campaigns.map((campaign, index) => {
+    const title = campaign.title || 'Special Campaign';
+    const description = campaign.description || 'No description available';
+    const date = campaign.date || 'Ongoing';
+    const link = campaign.link || 'https://www.enpara.com/kampanyalar';
+    const shortDesc = description.length > 50 ? description.substring(0, 47) + '...' : description;
+    return `| ${index + 1} | **${title}** | ${shortDesc} | ${date} | [View Details](${link}) |`;
+  }).join('\n');
+  return tableHeader + tableRows;
+};
+
 // ============================================================================
 // RESOURCES - MCP Resources for data access
 // ============================================================================
@@ -73,6 +115,12 @@ mcpServer.setRequestHandler(ListResourcesRequestSchema, async () => {
         mimeType: "application/json"
       },
       {
+        uri: "enpara://exchange-rates/summary",
+        name: "Exchange Rates Summary",
+        description: "Human-readable summary table for exchange rates (markdown)",
+        mimeType: "text/markdown"
+      },
+      {
         uri: "enpara://exchange-rates/ui",
         name: "Exchange Rates UI",
         description: "Interactive UI widget for exchange rates",
@@ -83,6 +131,12 @@ mcpServer.setRequestHandler(ListResourcesRequestSchema, async () => {
         name: "Latest Campaigns",
         description: "Current banking campaigns and promotions",
         mimeType: "application/json"
+      },
+      {
+        uri: "enpara://campaigns/summary",
+        name: "Campaigns Summary",
+        description: "Human-readable summary table for campaigns (markdown)",
+        mimeType: "text/markdown"
       },
       {
         uri: "enpara://campaigns/ui",
@@ -123,6 +177,23 @@ mcpServer.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       };
     }
 
+    if (uri === "enpara://exchange-rates/summary") {
+      const rates = await EnParaAPI.getExchangeRates();
+      const list = rates.rates || rates.FxRates || [];
+      const header = `🏛️ **EnPara Bank Exchange Rates**\n`;
+      const info = `📅 **Last Updated:** ${new Date().toLocaleString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}\n`;
+      const base = `💱 **Base Currency:** TRY (Turkish Lira)\n`;
+      const count = `📊 **Available Currencies:** ${list.length}\n`;
+      const separator = `\n${'='.repeat(60)}\n\n`;
+      const table = createExchangeRateTable(list);
+      const text = `${header}${info}${base}${count}${separator}${table}`;
+      return {
+        contents: [
+          { uri, mimeType: "text/markdown", text }
+        ]
+      };
+    }
+
     if (uri === "enpara://campaigns/latest") {
       const campaigns = await EnParaAPI.getCampaigns();
       return {
@@ -148,6 +219,21 @@ mcpServer.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       };
     }
 
+    if (uri === "enpara://campaigns/summary") {
+      const campaigns = await EnParaAPI.getCampaigns();
+      const campaignList = campaigns.campaigns || campaigns.Campaigns || [];
+      const header = `🎉 **EnPara Banking Campaigns**\n`;
+      const count = `📊 **Active Campaigns:** ${campaignList.length}\n`;
+      const separator = `\n${'='.repeat(60)}\n\n`;
+      const table = createCampaignTable(campaignList);
+      const text = `${header}${count}${separator}${table}`;
+      return {
+        contents: [
+          { uri, mimeType: "text/markdown", text }
+        ]
+      };
+    }
+
     throw new Error(`Unknown resource URI: ${uri}`);
   } catch (error) {
     throw new Error(`Failed to read resource ${uri}: ${error.message}`);
@@ -159,53 +245,7 @@ mcpServer.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 // ============================================================================
 
 mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools: [
-      {
-        name: "get-exchange-rates",
-    description: "Get current currency exchange rates from EnPara bank including USD, EUR, GBP and other major currencies. Shows both buy and sell rates in Turkish Lira.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        currencies: {
-          type: "array",
-          items: { 
-            type: "string",
-            enum: ["USD", "EUR", "GBP", "CHF", "JPY", "CAD", "AUD", "SEK", "NOK", "DKK", "RUB", "CNY", "SAR", "AED", "KWD", "BHD", "QAR", "OMR", "JOD", "LBP", "EGP", "ILS"]
-          },
-          description: "Specific currencies to fetch (e.g., ['USD', 'EUR', 'GBP']). If not specified, returns all available currencies.",
-        },
-        baseCurrency: {
-          type: "string",
-          enum: ["TRY"],
-          description: "Base currency for rates (only TRY supported)",
-          default: "TRY"
-        }
-      },
-        },
-      },
-      {
-        name: "get-banking-campaigns",
-    description: "View current EnPara banking campaigns, promotions, and special offers including credit cards, loans, savings accounts, and other financial products.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        category: {
-          type: "string",
-          enum: ["credit-card", "loan", "savings", "investment", "insurance", "all"],
-              description: "Campaign category filter",
-          default: "all"
-        },
-        active: {
-          type: "boolean",
-          description: "Show only active campaigns (default: true)",
-          default: true
-        }
-      },
-        },
-      },
-    ],
-  };
+  return { tools: [] };
 });
 
 mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {

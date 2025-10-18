@@ -106,6 +106,7 @@ fi
 # PID'leri kaydet
 echo $SERVER_PID > logs/server.pid
 echo $NGROK_PID > logs/ngrok.pid
+echo $NGROK_URL > logs/ngrok_url.txt
 
 # Başarı mesajı
 echo ""
